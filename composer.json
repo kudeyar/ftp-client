@@ -1,0 +1,19 @@
+{
+  "name": "harlam/ftp-client",
+  "type": "library",
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "harlam",
+      "email": "harlamov.nikolay@yandex.ru"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "harlam\\Ftp\\": "src/"
+    }
+  }
+}
