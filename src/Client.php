@@ -26,7 +26,16 @@ class Client
 
     public function __destruct()
     {
-        ftp_close($this->connection);
+        ftp_close($this->getConnection());
+    }
+
+    /**
+     * ftp-connection
+     * @return resource
+     */
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     /**
@@ -37,7 +46,7 @@ class Client
      */
     public function login(string $username, string $password): Client
     {
-        if (!@ftp_login($this->connection, $username, $password)) {
+        if (!@ftp_login($this->getConnection(), $username, $password)) {
             throw new FtpLoginException("Authentication failed with username '{$username}'");
         }
         return $this;
@@ -49,7 +58,7 @@ class Client
      */
     public function cdup(): Client
     {
-        if (!@ftp_cdup($this->connection)) {
+        if (!@ftp_cdup($this->getConnection())) {
             throw new FtpChangeDirectoryException("Change directory to '/' failed");
         }
         return $this;
@@ -62,7 +71,7 @@ class Client
      */
     public function pasv(bool $pasv = true): Client
     {
-        if (!@ftp_pasv($this->connection, $pasv)) {
+        if (!@ftp_pasv($this->getConnection(), $pasv)) {
             $modeLabel = $pasv === true ? 'PASSIVE' : 'ACTIVE';
             throw new FtpChangeModeException("Change mode to '{$modeLabel}' failed");
         }
@@ -76,7 +85,7 @@ class Client
      */
     public function chdir(string $directory): Client
     {
-        if (!@ftp_chdir($this->connection, $directory)) {
+        if (!@ftp_chdir($this->getConnection(), $directory)) {
             throw new FtpChangeDirectoryException("Change directory to '{$directory}' failed");
         }
         return $this;
@@ -88,7 +97,7 @@ class Client
      */
     public function nlist(string $directory = '.'): array
     {
-        if (($result = @ftp_nlist($this->connection, $directory)) === false) {
+        if (($result = @ftp_nlist($this->getConnection(), $directory)) === false) {
             return [];
         }
         return $result;
@@ -102,7 +111,7 @@ class Client
      */
     public function chmod(int $mode, string $filename): array
     {
-        if (($result = @ftp_chmod($this->connection, $mode, $filename)) === false) {
+        if (($result = @ftp_chmod($this->getConnection(), $mode, $filename)) === false) {
             throw new FtpFileChangeModeException("Change mode '{$mode}' for '{$filename}' failed");
         }
         return $result;
@@ -118,7 +127,7 @@ class Client
      */
     public function get(string $local_file, string $remote_file, int $mode = FTP_BINARY, int $resumepos = 0): Client
     {
-        if (!@ftp_get($this->connection, $local_file, $remote_file, $mode, $resumepos)) {
+        if (!@ftp_get($this->getConnection(), $local_file, $remote_file, $mode, $resumepos)) {
             throw new FtpFileDownloadException("Downloading file '{$remote_file}' to '{$local_file}' failed");
         }
         return $this;
@@ -134,7 +143,7 @@ class Client
      */
     public function put(string $remote_file, string $local_file, int $mode = FTP_IMAGE, int $startpos = 0): Client
     {
-        if (!@ftp_put($this->connection, $remote_file, $local_file, $mode, $startpos)) {
+        if (!@ftp_put($this->getConnection(), $remote_file, $local_file, $mode, $startpos)) {
             throw new FtpFileUploadException("Uploading file '{$local_file}' to '{$remote_file}' failed");
         }
         return $this;
@@ -159,7 +168,7 @@ class Client
      */
     public function delete(string $path): Client
     {
-        if (!@ftp_delete($this->connection, $path)) {
+        if (!@ftp_delete($this->getConnection(), $path)) {
             throw new FtpDeleteException("Delete file '{$path}' failed");
         }
         return $this;
